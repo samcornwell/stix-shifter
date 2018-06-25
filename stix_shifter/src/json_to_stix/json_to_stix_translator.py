@@ -160,24 +160,20 @@ class DataSourceObjToStixObj:
         new_obj = {'type': type_str}
         tmp_obj = new_obj
 
-        if is_obj:
-            child_props = split_key[1:]
-            # for each child property update down the chain to set the value
-            for child_prop in child_props:
-                tmp_obj.update({child_prop: stix_value})
-            ref_objs.update({ds_key: index})
-        else:
-            child_props = split_key[1:-1]
-            for child_prop in child_props:
-                child_obj = {}
-                tmp_obj.update({child_prop: child_obj})
-                tmp_obj = child_obj
-            if transformer is not None:
-                if stix_value is None:
-                    return index
-                stix_value = transformer.transform(stix_value)
+        child_props = split_key[1:-1]
+        for child_prop in child_props:
+            child_obj = {}
+            tmp_obj.update({child_prop: child_obj})
+            tmp_obj = child_obj
+        if transformer is not None:
+            if stix_value is None:
+                return index
+            stix_value = transformer.transform(stix_value)
 
-            tmp_obj.update({split_key[-1]: stix_value})
+        tmp_obj.update({split_key[-1]: stix_value})
+
+        if is_obj:
+            ref_objs.update({ds_key: index})
 
         # if the key is part of a linked object
         if linked is not None:
